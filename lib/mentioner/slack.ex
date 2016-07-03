@@ -6,9 +6,13 @@ defmodule Mentioner.Slack do
     cond do
       Regex.run ~r/<@#{slack.me.id}>:?\sping/, message.text ->
         send_message("<@#{message.user}> pong", message.channel, slack)
+      parser_data = Regex.run(~r/<@#{slack.me.id}>:?\ssubscribe ([^ ]+)/, message.text) ->
+        [_, github_username] = parser_data
+        Mentioner.Usermap.put(github_username, message.user)
+        send_message("<@#{message.user}> subscribed to #{github_username}", message.channel, slack)
       parser_data = Regex.run(~r/Commit.*branch by ([^ ]+) ([^ ]+) /, message.text) ->
         [_, username, result] = parser_data
-        user = lookup_user_id("@#{username}", slack)
+        user = Mentioner.Usermap.get username
         if result == "failed" && user do
           send_message("<@#{user}> :point_up_2:", message.channel, slack)
         end

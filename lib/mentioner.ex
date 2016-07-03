@@ -7,7 +7,7 @@ defmodule Mentioner do
       IO.puts "The Slack Bot key is not exported! Exiting."
       System.halt 1
     end
-    # Define workers and child supervisors to be supervised
+    Mentioner.Usermap.start_link # no supervision
     children = [worker(Mentioner.Slack, [slack_token, :whatever])]
     opts = [strategy: :one_for_one, name: Mentioner.Supervisor]
     Supervisor.start_link(children, opts)
