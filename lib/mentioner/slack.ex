@@ -2,9 +2,18 @@ defmodule Mentioner.Slack do
   use Slack
 
   def handle_message(message = %{type: "message"}, slack, state) do
-    if Regex.run ~r/<@#{slack.me.id}>:?\sping/, message.text do
-      send_message("<@#{message.user}> pong",
-        message.channel, slack)
+    IO.puts inspect(message)
+    cond do
+      Regex.run ~r/<@#{slack.me.id}>:?\sping/, message.text ->
+        send_message("<@#{message.user}> pong", message.channel, slack)
+      parser_data = Regex.run(~r/Commit.*branch by ([^ ]+) ([^ ]+) /, message.text) ->
+        [_, username, result] = parser_data
+        user = lookup_user_id("@#{username}", slack)
+        if result == "failed" && user do
+          send_message("<@#{user}> :point_up_2:", message.channel, slack)
+        end
+      true ->
+        true
     end
     {:ok, state}
   end
