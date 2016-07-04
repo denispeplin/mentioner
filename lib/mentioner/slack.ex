@@ -4,7 +4,7 @@ defmodule Mentioner.Slack do
   def handle_message(message = %{attachments: [attachment | _tail]}, slack, state) do
     IO.puts inspect(attachment)
     cond do
-      parser_data = Regex.run(~r/Commit.*branch by ([^ ]+) ([^ ]+) /, attachment.fallback) ->
+      parser_data = Regex.run(~r/Commit.*branch by (.+) (passed|failed) /, attachment.fallback) ->
         [_, username, result] = parser_data
         user = Mentioner.Usermap.get username
         if result == "failed" && user do
@@ -20,9 +20,9 @@ defmodule Mentioner.Slack do
     cond do
       Regex.run ~r/<@#{slack.me.id}>:?\sping/, message.text ->
         send_message("<@#{message.user}> pong", message.channel, slack)
-      parser_data = Regex.run(~r/<@#{slack.me.id}>:?\ssubscribe ([^ ]+)/, message.text) ->
+      parser_data = Regex.run(~r/<@#{slack.me.id}>:?\ssubscribe[\s]+(.+)/, message.text) ->
         [_, github_username] = parser_data
-        Mentioner.Usermap.put(github_username, message.user)
+        github_username |> String.strip |> Mentioner.Usermap.put(message.user)
         send_message("<@#{message.user}> subscribed to #{github_username}", message.channel, slack)
       true ->
         true
