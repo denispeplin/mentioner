@@ -3,20 +3,28 @@ defmodule Mentioner.Usermap do
   Starts a new usermap.
   """
   def start_link do
-    Agent.start_link(fn -> %{} end, name: Usermap)
+    table = :ets.new(:usermap, [:set, :public])
+    Agent.start_link(fn -> table end, name: Usermap)
   end
 
   @doc """
   Gets a value from the `usermap` by `key`.
   """
   def get(key) do
-    Agent.get(Usermap, &Map.get(&1, key))
+    case :ets.lookup(table_link, key) do
+      [{^key, value}] -> value
+      [] -> nil
+    end
   end
 
   @doc """
   Puts the `value` for the given `key` in the `usermap`.
   """
   def put(key, value) do
-    Agent.update(Usermap, &Map.put(&1, key, value))
+    :ets.insert(table_link, {key, value})
+  end
+
+  defp table_link do
+    Agent.get(Usermap, &(&1))
   end
 end
