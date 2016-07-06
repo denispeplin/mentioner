@@ -24,6 +24,13 @@ defmodule Mentioner.Usermap do
   end
 
   @doc """
+  Delete value by key from `usermap`.
+  """
+  def delete(key) do
+    :dets.delete(:usermap, key)
+  end
+
+  @doc """
   Puts the `value` for the given `key` in the `usermap`.
   """
   def put(key, value) do
