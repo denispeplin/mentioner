@@ -1,9 +1,16 @@
 defmodule Mentioner.Usermap do
+  use GenServer
+
   @doc """
   Starts a new usermap.
   """
   def start_link do
     :dets.open_file(:usermap, [type: :set])
+    GenServer.start_link(__MODULE__, [], name: __MODULE__)
+  end
+
+  def terminate do
+    :dets.close(:usermap)
   end
 
   @doc """
