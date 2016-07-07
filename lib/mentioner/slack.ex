@@ -14,7 +14,7 @@ defmodule Mentioner.Slack do
     end
     { :ok, state }
   end
-  def handle_message(message = %{type: "message"}, slack, state) do
+  def handle_message(message = %{type: "message", text: _}, slack, state) do
     IO.puts inspect(message)
     with [_, command, params] <- Regex.run ~r/<@#{slack.me.id}>:?\s([^ ]+)\s?(.*)/, message.text do
       handle_command(command, params, message, slack)
