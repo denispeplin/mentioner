@@ -40,4 +40,7 @@ defmodule Mentioner.Slack do
     gitlab_username |> String.strip |> Mentioner.Usermap.delete_object(message.user)
     send_message("<@#{message.user}> unsubscribed from #{gitlab_username}", message.channel, slack)
   end
+  def handle_command(_, _, message, slack) do
+    send_message("<@#{message.user}> what?", message.channel, slack)
+  end
 end
