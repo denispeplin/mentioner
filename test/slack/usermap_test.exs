@@ -7,7 +7,9 @@ defmodule Mentioner.UsermapTest do
 
     Mentioner.Usermap.put("gitlab_user", "slack_user")
     assert Mentioner.Usermap.get("gitlab_user") == "slack_user"
-    Mentioner.Usermap.delete("gitlab_user")
+    Mentioner.Usermap.delete_object("gitlab_user", "other_user")
+    assert Mentioner.Usermap.get("gitlab_user") == "slack_user"
+    Mentioner.Usermap.delete_object("gitlab_user", "slack_user")
     assert Mentioner.Usermap.get("gitlab_user") == nil
   end
 end

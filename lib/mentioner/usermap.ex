@@ -26,8 +26,8 @@ defmodule Mentioner.Usermap do
   @doc """
   Delete value by key from `usermap`.
   """
-  def delete(key) do
-    :dets.delete(:usermap, key)
+  def delete_object(key, value) do
+    :dets.delete_object(:usermap, {key, value})
   end
 
   @doc """
